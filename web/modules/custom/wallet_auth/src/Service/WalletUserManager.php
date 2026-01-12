@@ -128,7 +128,7 @@ class WalletUserManager {
     try {
       $currentTime = $this->time->getRequestTime();
 
-      // Check if wallet is already linked to a different user
+      // Check if wallet is already linked to a different user.
       $existingUid = $this->database->select('wallet_auth_wallet_address', 'wa')
         ->fields('wa', ['uid'])
         ->condition('wa.wallet_address', $walletAddress)
@@ -144,7 +144,7 @@ class WalletUserManager {
         return;
       }
 
-      // Insert or update the wallet link
+      // Insert or update the wallet link.
       $this->database->merge('wallet_auth_wallet_address')
         ->key('wallet_address', $walletAddress)
         ->fields([
@@ -199,13 +199,13 @@ class WalletUserManager {
     $username = $this->generateUsername($walletAddress);
     $email = $username . '@wallet.local';
 
-    // Use External Auth to register the user
+    // Use External Auth to register the user.
     $account = $this->externalAuth->register($username, 'wallet_auth');
     $account->setEmail($email);
     $account->activate();
     $account->save();
 
-    // Link wallet to user
+    // Link wallet to user.
     $this->linkWalletToUser($walletAddress, (int) $account->id());
 
     $this->logger->info('Created new user @username from wallet @wallet', [
@@ -230,7 +230,7 @@ class WalletUserManager {
     $username = $baseUsername;
     $counter = 0;
 
-    // Ensure username is unique
+    // Ensure username is unique.
     while ($this->usernameExists($username)) {
       $counter++;
       $username = $baseUsername . '_' . $counter;
@@ -270,11 +270,11 @@ class WalletUserManager {
    *   The logged-in or newly created user.
    */
   public function loginOrCreateUser(string $walletAddress): UserInterface {
-    // First try to load existing user
+    // First try to load existing user.
     $existingUser = $this->loadUserByWalletAddress($walletAddress);
 
     if ($existingUser) {
-      // Update last_used timestamp
+      // Update last_used timestamp.
       $this->database->update('wallet_auth_wallet_address')
         ->fields(['last_used' => $this->time->getRequestTime()])
         ->condition('wallet_address', $walletAddress)
@@ -288,7 +288,7 @@ class WalletUserManager {
       return $existingUser;
     }
 
-    // Create new user
+    // Create new user.
     return $this->createUserFromWallet($walletAddress);
   }
 

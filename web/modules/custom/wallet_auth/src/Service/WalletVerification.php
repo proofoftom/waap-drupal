@@ -179,7 +179,7 @@ class WalletVerification {
    */
   public function verifySignature(string $message, string $signature, string $walletAddress): bool {
     try {
-      // Validate inputs
+      // Validate inputs.
       if (!$this->validateAddress($walletAddress)) {
         $this->logger->warning('Invalid wallet address format');
         return FALSE;
@@ -190,7 +190,7 @@ class WalletVerification {
         return FALSE;
       }
 
-      // Convert hex signature to binary
+      // Convert hex signature to binary.
       $signatureBin = hex2bin(substr($signature, 2));
       if ($signatureBin === FALSE) {
         $this->logger->warning('Invalid hex signature format');
@@ -212,11 +212,11 @@ class WalletVerification {
         $v += 27;
       }
 
-      // Add Ethereum signed message prefix
+      // Add Ethereum signed message prefix.
       $prefixedMessage = "\x19Ethereum Signed Message:\n" . strlen($message) . $message;
       $hash = Keccak::hash($prefixedMessage, 256, TRUE);
 
-      // Recover public key from signature
+      // Recover public key from signature.
       $ec = new EC('secp256k1');
       $pubKey = $ec->recoverPubKey($hash, ['r' => $r, 's' => $s], $v);
 
@@ -225,7 +225,7 @@ class WalletVerification {
         return FALSE;
       }
 
-      // Derive address from public key
+      // Derive address from public key.
       $recoveredAddress = $this->pubKeyToAddress($pubKey);
 
       // Compare recovered address with expected address (case-insensitive)
@@ -260,13 +260,13 @@ class WalletVerification {
     $pubKeyHex = $pubKey->encode('hex');
     $pubKeyBin = hex2bin(substr($pubKeyHex, 2));
 
-    // Hash the public key with Keccak-256
+    // Hash the public key with Keccak-256.
     $hash = Keccak::hash($pubKeyBin, 256, TRUE);
 
-    // Take the last 20 bytes as the address
+    // Take the last 20 bytes as the address.
     $address = substr($hash, -20);
 
-    // Return 0x-prefixed hex address
+    // Return 0x-prefixed hex address.
     return '0x' . bin2hex($address);
   }
 
@@ -280,7 +280,7 @@ class WalletVerification {
    *   TRUE if address is valid, FALSE otherwise.
    */
   public function validateAddress(string $address): bool {
-    // Check basic format: 0x prefix, 42 characters total, hex characters
+    // Check basic format: 0x prefix, 42 characters total, hex characters.
     if (!str_starts_with($address, '0x')) {
       return FALSE;
     }
@@ -294,7 +294,7 @@ class WalletVerification {
       return FALSE;
     }
 
-    // If all uppercase or all lowercase, it's valid
+    // If all uppercase or all lowercase, it's valid.
     if (strtoupper($hexPart) === $hexPart || strtolower($hexPart) === $hexPart) {
       return TRUE;
     }
@@ -318,7 +318,7 @@ class WalletVerification {
 
     for ($i = 0; $i < 40; $i++) {
       // The nth character should be uppercase if the nth character of
-      // addressHash is >= 8
+      // addressHash is >= 8.
       $char = $address[$i];
       $hashChar = hexdec($addressHash[$i]);
 
