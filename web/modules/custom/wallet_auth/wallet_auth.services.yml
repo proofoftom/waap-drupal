@@ -6,3 +6,11 @@ services:
       - '@logger.factory'
       - '@datetime.time'
       - '@tempstore.private'
+  wallet_auth.user_manager:
+    class: Drupal\wallet_auth\Service\WalletUserManager
+    arguments:
+      - '@database'
+      - '@externalauth.externalauth'
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@datetime.time'
