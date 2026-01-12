@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\wallet_auth\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\wallet_auth\Service\WalletVerification;
 use Drupal\wallet_auth\Service\WalletUserManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -21,14 +22,21 @@ class AuthenticateController extends ControllerBase {
    *
    * @var \Drupal\wallet_auth\Service\WalletVerification
    */
-  protected $verification;
+  protected WalletVerification $verification;
 
   /**
    * The wallet user manager service.
    *
    * @var \Drupal\wallet_auth\Service\WalletUserManager
    */
-  protected $userManager;
+  protected WalletUserManager $userManager;
+
+  /**
+   * The logger channel.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelInterface
+   */
+  protected $logger;
 
   /**
    * Constructs an AuthenticateController.
@@ -37,13 +45,28 @@ class AuthenticateController extends ControllerBase {
    *   The wallet verification service.
    * @param \Drupal\wallet_auth\Service\WalletUserManager $user_manager
    *   The wallet user manager service.
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+   *   The logger channel factory.
    */
   public function __construct(
     WalletVerification $verification,
     WalletUserManager $user_manager,
+    LoggerChannelFactoryInterface $logger_factory,
   ) {
     $this->verification = $verification;
     $this->userManager = $user_manager;
+    $this->logger = $logger_factory->get('wallet_auth');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('wallet_auth.verification'),
+      $container->get('wallet_auth.user_manager'),
+      $container->get('logger.factory'),
+    );
   }
 
   /**
@@ -76,6 +99,9 @@ class AuthenticateController extends ControllerBase {
 
       // 2. Validate address format
       if (!$this->verification->validateAddress($walletAddress)) {
+        $this->logger->warning('Authentication attempt with invalid wallet address format: @address', [
+          '@address' => $walletAddress,
+        ]);
         return new JsonResponse([
           'success' => FALSE,
           'error' => 'Invalid wallet address',
@@ -84,6 +110,9 @@ class AuthenticateController extends ControllerBase {
 
       // 3. Verify signature and SIWE message (includes nonce validation)
       if (!$this->verification->verifySignature($message, $signature, $walletAddress)) {
+        $this->logger->warning('Authentication failed for wallet @wallet: invalid signature', [
+          '@wallet' => $walletAddress,
+        ]);
         return new JsonResponse([
           'success' => FALSE,
           'error' => 'Invalid signature',
@@ -99,6 +128,11 @@ class AuthenticateController extends ControllerBase {
       // 6. Log user in
       user_login_finalize($user);
 
+      $this->logger->info('User authenticated successfully via wallet @wallet', [
+        '@wallet' => $walletAddress,
+        'uid' => $user->id(),
+      ]);
+
       // 7. Return success
       return new JsonResponse([
         'success' => TRUE,
@@ -107,6 +141,9 @@ class AuthenticateController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->logger->error('Authentication error: @message', [
+        '@message' => $e->getMessage(),
+      ]);
       return new JsonResponse([
         'success' => FALSE,
         'error' => 'Authentication failed',
