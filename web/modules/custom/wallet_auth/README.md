@@ -22,6 +22,58 @@ The following PHP packages are required:
 2. Enable the module via Drush: `drush pm:enable wallet_auth -y`
    or through the admin interface at `/admin/modules`.
 3. Clear caches: `drush cache:rebuild`
+4. **Place the Wallet Login block:**
+   - Navigate to `/admin/structure/block`
+   - Select a theme region (e.g., "Sidebar First" or "Content")
+   - Click "Place block" and find "Wallet Login Button"
+   - Configure block visibility if needed
+   - Click "Save block"
+5. Configure settings (optional): Navigate to
+   `/admin/config/people/wallet-auth`
+
+## Configuration
+
+The module provides an administrative settings page at
+`/admin/config/people/wallet-auth` (also accessible under
+"People" → "Wallet authentication" in the admin menu).
+
+### Settings Options
+
+- **Blockchain network**: Select the Ethereum-compatible network to use
+  (Mainnet, Sepolia, Polygon, BSC, Arbitrum, Optimism). Default: Mainnet.
+- **Enable auto-connect**: Automatically attempt to connect the wallet
+  when the block loads. Default: Enabled.
+- **Nonce lifetime**: How long authentication nonces remain valid,
+  in seconds (60-3600). Default: 300 (5 minutes).
+
+### Accessing Settings
+
+Navigate to `/admin/config/people/wallet-auth` or:
+1. Go to "Manage" → "Configuration"
+2. Under "People", click "Wallet authentication"
+
+## Usage
+
+### For End Users
+
+1. Visit a page with the Wallet Login block placed
+2. Click "Connect Wallet" to open your browser wallet extension
+3. Approve the signature request in your wallet
+4. You will be automatically logged in to Drupal
+
+**Note:** The Wallet Login block only displays for anonymous users.
+Authenticated users will not see the block.
+
+### User Account Creation
+
+When a user authenticates with their wallet for the first time:
+- A new Drupal account is automatically created
+- Username format: `wallet_0x1234...` (truncated address)
+- The wallet address is linked to the account
+- User is logged in immediately
+
+Subsequent authentications with the same wallet will log in the
+existing account.
 
 ## Architecture
 
@@ -123,6 +175,52 @@ A test script is available at `test-wallet-auth.php` for manual testing:
 ddev exec php test-wallet-auth.php
 ```
 
+## Troubleshooting
+
+### Block Not Appearing
+
+**Problem:** The Wallet Login button is not visible on the page.
+
+**Solutions:**
+- Clear Drupal caches: `drush cache:rebuild`
+- Ensure the module is enabled: `drush pm:status`
+- Verify the block is placed in a theme region
+- Check block visibility settings
+- Confirm you are viewing the page as an anonymous user (the block
+  only shows for anonymous users)
+
+### Wallet Not Connecting
+
+**Problem:** Clicking "Connect Wallet" does not open a wallet dialog.
+
+**Solutions:**
+- Ensure you have a browser wallet extension installed (MetaMask,
+  WalletConnect, etc.)
+- Check that your wallet is unlocked
+- Try refreshing the page
+- Check browser console for JavaScript errors
+- Verify the wallet_auth_ui library is loading in page source
+
+### Authentication Failing
+
+**Problem:** Wallet connects but authentication fails.
+
+**Solutions:**
+- Check the Drupal logs: `/admin/reports/dblog`
+- Verify the wallet address format is correct (0x-prefixed, 42 chars)
+- Ensure the signature was approved in your wallet
+- Check that the nonce has not expired (default 5 minutes)
+- Try generating a new nonce by refreshing the page
+
+### Settings Page Not Accessible
+
+**Problem:** Cannot access `/admin/config/people/wallet-auth`.
+
+**Solutions:**
+- Clear caches: `drush cache:rebuild`
+- Ensure you have "administer site configuration" permission
+- Verify the module is fully installed
+
 ## Development Roadmap
 
 This module is being developed as part of a phased approach:
@@ -130,9 +228,9 @@ This module is being developed as part of a phased approach:
 - **Phase 1**: Foundation & Environment Setup ✅
 - **Phase 2**: Wallet as a Protocol Integration Research ✅
 - **Phase 3**: Backend Authentication System ✅
-- **Phase 4**: Frontend Wallet Integration (Next)
-- **Phase 5**: Testing & Quality Assurance
-- **Phase 6**: Documentation & Deployment
+- **Phase 4**: Frontend Wallet Integration ✅
+- **Phase 5**: Integration & Polish ✅
+- **Phase 6**: Testing & Validation (Next)
 
 ## Security Considerations
 
