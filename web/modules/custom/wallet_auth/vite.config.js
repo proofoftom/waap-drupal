@@ -1,24 +1,28 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
 
 export default defineConfig({
   build: {
-    rollupOptions: {
-      input: {
-        'wallet-auth-connector': resolve(__dirname, 'src/js/wallet-auth-connector.js'),
-        'wallet-auth-ui': resolve(__dirname, 'src/js/wallet-auth-ui.js'),
-      },
-      output: {
-        entryFileNames: '[name].js',
-        dir: 'js/dist',
-        format: 'es',
-        globals: {
-          '@human.tech/waap-sdk': 'WaaP',
-        },
-      },
-      external: ['@human.tech/waap-sdk'],
+    lib: {
+      entry: './src/js/wallet-auth-connector.js',
+      name: 'WalletAuthConnector',
+      formats: ['iife'],
+      fileName: 'wallet-auth-connector',
     },
     outDir: 'js/dist',
-    emptyOutDir: true,
+    emptyOutDir: false,
+  },
+});
+
+// Also build UI separately
+export default defineConfig({
+  build: {
+    lib: {
+      entry: './src/js/wallet-auth-ui.js',
+      name: 'WalletAuthUI',
+      formats: ['iife'],
+      fileName: 'wallet-auth-ui',
+    },
+    outDir: 'js/dist',
+    emptyOutDir: false,
   },
 });

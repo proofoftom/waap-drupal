@@ -4,8 +4,8 @@
   "description": "Wallet authentication for Drupal using Wallet as a Protocol",
   "type": "module",
   "scripts": {
-    "build": "npx vite build",
-    "dev": "npx vite build --watch --mode development"
+    "build": "rm -rf js/dist/* && npx vite build --config vite.config.connector.js && npx vite build --config vite.config.ui.js",
+    "dev": "rm -rf js/dist/* && npx vite build --config vite.config.connector.js --watch --mode development & npx vite build --config vite.config.ui.js --watch --mode development"
   },
   "devDependencies": {
     "@human.tech/waap-sdk": "^1.0.2",
