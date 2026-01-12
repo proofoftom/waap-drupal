@@ -70,16 +70,6 @@ class AuthenticateController extends ControllerBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('wallet_auth.verification'),
-      $container->get('wallet_auth.user_manager'),
-    );
-  }
-
-  /**
    * Authenticate a user using wallet signature.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request

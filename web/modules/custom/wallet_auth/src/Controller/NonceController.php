@@ -28,7 +28,7 @@ class NonceController extends ControllerBase {
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected ConfigFactoryInterface $configFactory;
+  protected $configFactory;
 
   /**
    * The current request.
@@ -50,7 +50,7 @@ class NonceController extends ControllerBase {
   public function __construct(
     WalletVerification $verification,
     ConfigFactoryInterface $config_factory,
-    Request $request
+    Request $request,
   ) {
     $this->verification = $verification;
     $this->configFactory = $config_factory;
