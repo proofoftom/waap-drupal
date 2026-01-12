@@ -40,7 +40,7 @@ class AuthenticateController extends ControllerBase {
    */
   public function __construct(
     WalletVerification $verification,
-    WalletUserManager $user_manager
+    WalletUserManager $user_manager,
   ) {
     $this->verification = $verification;
     $this->userManager = $user_manager;
@@ -52,7 +52,7 @@ class AuthenticateController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('wallet_auth.verification'),
-      $container->get('wallet_auth.user_manager')
+      $container->get('wallet_auth.user_manager'),
     );
   }
 

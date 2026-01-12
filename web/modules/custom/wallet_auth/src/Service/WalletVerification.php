@@ -67,7 +67,7 @@ class WalletVerification {
     Connection $database,
     LoggerChannelFactoryInterface $logger_factory,
     TimeInterface $time,
-    PrivateTempStoreFactory $temp_store_factory
+    PrivateTempStoreFactory $temp_store_factory,
   ) {
     $this->database = $database;
     $this->logger = $logger_factory->get('wallet_auth');
@@ -164,8 +164,8 @@ class WalletVerification {
    * Verify an Ethereum signature matches the expected address.
    *
    * This implements EIP-191 (personal_sign) signature verification.
-   * The message is prefixed with "\x19Ethereum Signed Message:\n" + message length
-   * before being hashed with Keccak-256.
+   * The message is prefixed with "\x19Ethereum Signed Message:\n" before
+   * being hashed with Keccak-256.
    *
    * @param string $message
    *   The original message that was signed.
@@ -317,7 +317,8 @@ class WalletVerification {
     $addressHash = Keccak::hash(strtolower($address), 256);
 
     for ($i = 0; $i < 40; $i++) {
-      // The nth character should be uppercase if the nth character of addressHash is >= 8
+      // The nth character should be uppercase if the nth character of
+      // addressHash is >= 8
       $char = $address[$i];
       $hashChar = hexdec($addressHash[$i]);
 

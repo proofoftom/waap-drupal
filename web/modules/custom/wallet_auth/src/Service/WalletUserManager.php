@@ -70,7 +70,7 @@ class WalletUserManager {
     ExternalAuthInterface $external_auth,
     EntityTypeManagerInterface $entity_type_manager,
     LoggerChannelFactoryInterface $logger_factory,
-    TimeInterface $time
+    TimeInterface $time,
   ) {
     $this->database = $database;
     $this->externalAuth = $external_auth;
