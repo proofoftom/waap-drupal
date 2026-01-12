@@ -62,11 +62,10 @@ Drupal.behaviors.walletAuth = {
       return self.connector.checkSession();
     }).then(function (account) {
       if (account) {
-        // User already authenticated
+        // User already authenticated with WaaP, but don't auto-login
+        // Just update UI to show connected state
         self.setState('connected');
         self.updateUI();
-        // Auto-proceed with authentication
-        self.authenticate(account);
       } else {
         // Show login button
         self.setState('idle');
@@ -87,7 +86,10 @@ Drupal.behaviors.walletAuth = {
     // Listen for account changes
     this.connector.on('accountChanged', function (accounts) {
       if (accounts.length > 0) {
-        self.authenticate(accounts[0]);
+        // Account changed, but don't auto-authenticate
+        // Just update UI to show connected state
+        self.setState('connected');
+        self.updateUI();
       } else {
         self.setState('idle');
         self.updateUI();
