@@ -21,3 +21,14 @@ function wallet_auth_help($route_name, RouteMatchInterface $route_match) {
       return $output;
   }
 }
+
+/**
+ * Implements hook_theme().
+ */
+function wallet_auth_theme($existing, $type, $theme, $path) {
+  return [
+    'wallet_login_button' => [
+      'variables' => [],
+    ],
+  ];
+}
