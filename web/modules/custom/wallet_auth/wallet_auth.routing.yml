@@ -19,3 +19,11 @@ wallet_auth.nonce:
     _access: 'TRUE'
   options:
     no_cache: 'TRUE'
+
+wallet_auth.settings:
+  path: '/admin/config/people/wallet-auth'
+  defaults:
+    _form: '\Drupal\wallet_auth\Form\SettingsForm'
+    _title: 'Wallet authentication'
+  requirements:
+    _permission: 'administer site configuration'
