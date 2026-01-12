@@ -1,0 +1,11 @@
+# DDEV configuration for Wallet Auth Drupal module
+# Type: drupal10
+# PHP: 8.2
+# Docroot: web
+
+type: drupal10
+docroot: web
+php_version: "8.2"
+
+# Additional configuration can be added here as needed
+# See: https://ddev.readthedocs.io/en/stable/users/configuration/
