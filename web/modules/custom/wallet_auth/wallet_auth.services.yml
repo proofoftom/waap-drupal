@@ -1,2 +1,8 @@
-# Wallet Auth services configuration
-# Services will be added here as the module develops
+services:
+  wallet_auth.verification:
+    class: Drupal\wallet_auth\Service\WalletVerification
+    arguments:
+      - '@database'
+      - '@logger.factory'
+      - '@datetime.time'
+      - '@tempstore.private'
