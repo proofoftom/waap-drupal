@@ -7,5 +7,7 @@ type: drupal10
 docroot: web
 php_version: "8.2"
 
+# Enable GMP extension required for Ethereum cryptographic operations
+webimage_extra_packages: [php8.2-gmp]
 # Additional configuration can be added here as needed
 # See: https://ddev.readthedocs.io/en/stable/users/configuration/
