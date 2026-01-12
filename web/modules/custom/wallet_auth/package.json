@@ -1,0 +1,14 @@
+{
+  "name": "@drupal/wallet_auth",
+  "version": "1.0.0",
+  "description": "Wallet authentication for Drupal using Wallet as a Protocol",
+  "type": "module",
+  "scripts": {
+    "build": "npx vite build",
+    "dev": "npx vite build --watch --mode development"
+  },
+  "devDependencies": {
+    "@human.tech/waap-sdk": "^1.0.2",
+    "vite": "^5.4.11"
+  }
+}
