@@ -6,6 +6,7 @@ namespace Drupal\wallet_auth\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
@@ -22,10 +23,44 @@ use Drupal\Core\Access\AccessResult;
 class WalletLoginBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected ConfigFactoryInterface $configFactory;
+
+  /**
+   * Constructs a WalletLoginBlock.
+   *
+   * @param array $configuration
+   *   The plugin configuration.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    ConfigFactoryInterface $config_factory
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->configFactory = $config_factory;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static($configuration, $plugin_id, $plugin_definition);
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('config.factory')
+    );
   }
 
   /**
@@ -40,8 +75,8 @@ class WalletLoginBlock extends BlockBase implements ContainerFactoryPluginInterf
       return $build;
     }
 
-    // Get API endpoint from settings or use default
-    $api_endpoint = '/wallet-auth';
+    // Read configuration.
+    $config = $this->configFactory->get('wallet_auth.settings');
 
     $build['#theme'] = 'wallet_login_button';
     $build['#attached'] = [
@@ -50,7 +85,9 @@ class WalletLoginBlock extends BlockBase implements ContainerFactoryPluginInterf
       ],
       'drupalSettings' => [
         'walletAuth' => [
-          'apiEndpoint' => $api_endpoint,
+          'apiEndpoint' => '/wallet-auth',
+          'network' => $config->get('network') ?? 'mainnet',
+          'enableAutoConnect' => $config->get('enable_auto_connect') ?? TRUE,
           'authenticationMethods' => ['email', 'social'],
           'allowedSocials' => ['google', 'twitter', 'discord'],
           'redirectOnSuccess' => '/user',
