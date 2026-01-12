@@ -7,6 +7,8 @@
  * This module provides wallet-based authentication using Wallet as a Protocol.
  */
 
+use Drupal\Core\Routing\RouteMatchInterface;
+
 /**
  * Implements hook_help().
  */
