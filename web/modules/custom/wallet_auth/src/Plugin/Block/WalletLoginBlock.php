@@ -89,6 +89,24 @@ class WalletLoginBlock extends BlockBase implements ContainerFactoryPluginInterf
 
     // Read configuration.
     $config = $this->configFactory->get('wallet_auth.settings');
+    $network = $config->get('network') ?? 'mainnet';
+
+    // Build WaaP config object for the SDK.
+    $waapConfig = [
+      'allowedSocials' => $config->get('allowed_socials') ?? ['google', 'twitter', 'discord', 'bluesky'],
+      'authenticationMethods' => $config->get('authentication_methods') ?? ['email', 'social'],
+    ];
+
+    // Add styles if configured.
+    $darkMode = $config->get('styles.darkMode');
+    if ($darkMode !== NULL) {
+      $waapConfig['styles'] = ['darkMode' => $darkMode];
+    }
+
+    // Add showSecured if explicitly set to false.
+    if ($config->get('showSecured') === FALSE) {
+      $waapConfig['showSecured'] = FALSE;
+    }
 
     $build['#theme'] = 'wallet_login_button';
     $build['#attached'] = [
@@ -98,11 +116,20 @@ class WalletLoginBlock extends BlockBase implements ContainerFactoryPluginInterf
       'drupalSettings' => [
         'walletAuth' => [
           'apiEndpoint' => '/wallet-auth',
-          'network' => $config->get('network') ?? 'mainnet',
-          'enableAutoConnect' => $config->get('enable_auto_connect') ?? TRUE,
+          'network' => $network,
+          'chainId' => $this->getChainId($network),
           'authenticationMethods' => $config->get('authentication_methods') ?? ['email', 'social'],
           'allowedSocials' => $config->get('allowed_socials') ?? ['google', 'twitter', 'discord', 'bluesky'],
           'redirectOnSuccess' => $config->get('redirect_on_success') ?? '/user',
+          // WaaP SDK config.
+          'waapConfig' => $waapConfig,
+          'walletConnectProjectId' => $config->get('walletConnectProjectId') ?? '',
+          // Project branding.
+          'projectName' => $config->get('project.name') ?? '',
+          'projectLogo' => $config->get('project.logo') ?? '',
+          'projectEntryTitle' => $config->get('project.entryTitle') ?? '',
+          // Button text.
+          'buttonText' => $config->get('button_text') ?? 'Sign In',
         ],
       ],
     ];
@@ -121,6 +148,28 @@ class WalletLoginBlock extends BlockBase implements ContainerFactoryPluginInterf
   public function blockAccess(AccountInterface $account) {
     // Only show for anonymous users.
     return $account->isAnonymous() ? AccessResult::allowed() : AccessResult::forbidden();
+  }
+
+  /**
+   * Get chain ID for a network name.
+   *
+   * @param string $network
+   *   The network name (e.g., 'mainnet', 'sepolia').
+   *
+   * @return int
+   *   The chain ID for the network.
+   */
+  protected function getChainId(string $network): int {
+    $chainIds = [
+      'mainnet' => 1,
+      'sepolia' => 11155111,
+      'polygon' => 137,
+      'bsc' => 56,
+      'arbitrum' => 42161,
+      'optimism' => 10,
+    ];
+
+    return $chainIds[$network] ?? 1;
   }
 
 }

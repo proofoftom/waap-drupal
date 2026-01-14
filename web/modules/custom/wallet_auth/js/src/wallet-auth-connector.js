@@ -34,11 +34,39 @@ import { initWaaP } from "@human.tech/waap-sdk";
       }
 
       try {
-        // Initialize WaaP SDK
-        initWaaP({
-          config: this.config,
+        // Build initWaaP options
+        const initOptions = {
+          config: {
+            allowedSocials: this.config.allowedSocials || [],
+            authenticationMethods: this.config.authenticationMethods || [],
+            ...(this.config.styles ? { styles: this.config.styles } : {}),
+            ...(this.config.showSecured !== undefined ? { showSecured: this.config.showSecured } : {}),
+          },
           useStaging: false,
-        });
+        };
+
+        // Add walletConnectProjectId if configured
+        if (this.config.walletConnectProjectId) {
+          initOptions.walletConnectProjectId = this.config.walletConnectProjectId;
+        }
+
+        // Add project branding if configured
+        const project = {};
+        if (this.config.projectName) {
+          project.name = this.config.projectName;
+        }
+        if (this.config.projectLogo) {
+          project.logo = this.config.projectLogo;
+        }
+        if (this.config.projectEntryTitle) {
+          project.entryTitle = this.config.projectEntryTitle;
+        }
+        if (Object.keys(project).length > 0) {
+          initOptions.project = project;
+        }
+
+        // Initialize WaaP SDK
+        initWaaP(initOptions);
 
         // Get provider
         this.provider = window.waap;
@@ -101,8 +129,9 @@ import { initWaaP } from "@human.tech/waap-sdk";
     }
 
     /**
-     * Check for existing session (auto-connect).
+     * Check for existing session (passive check).
      *
+     * Uses eth_accounts for passive checking without prompting user.
      * Returns account if user is already authenticated, null otherwise.
      */
     async checkSession() {
@@ -112,18 +141,18 @@ import { initWaaP } from "@human.tech/waap-sdk";
 
       try {
         const accounts = await this.provider.request({
-          method: "eth_requestAccounts",
+          method: "eth_accounts",
         });
 
-        if (accounts && accounts.length > 0) {
+        // Handle WaaP SDK returning [""] instead of [] for no session
+        if (accounts && accounts.length > 0 && accounts[0] && accounts[0] !== "") {
           this.account = accounts[0];
-          console.log("Auto-connected with existing session:", this.account);
+          console.log("Existing session found:", this.account);
           return this.account;
         }
 
         return null;
       } catch (error) {
-        // No existing session or user rejected
         console.log("No existing session found");
         return null;
       }
