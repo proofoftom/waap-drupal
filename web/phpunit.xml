@@ -21,19 +21,16 @@
   </php>
   <testsuites>
     <testsuite name="unit">
-      <file>./tests/TestSuites/UnitTestSuite.php</file>
+      <directory>./modules/custom/*/tests/src/Unit</directory>
     </testsuite>
     <testsuite name="kernel">
-      <file>./tests/TestSuites/KernelTestSuite.php</file>
+      <directory>./modules/custom/*/tests/src/Kernel</directory>
     </testsuite>
     <testsuite name="functional">
-      <file>./tests/TestSuites/FunctionalTestSuite.php</file>
+      <directory>./modules/custom/*/tests/src/Functional</directory>
     </testsuite>
     <testsuite name="functional-javascript">
-      <file>./tests/TestSuites/FunctionalJavascriptTestSuite.php</file>
-    </testsuite>
-    <testsuite name="build">
-      <file>./tests/TestSuites/BuildTestSuite.php</file>
+      <directory>./modules/custom/*/tests/src/FunctionalJavascript</directory>
     </testsuite>
   </testsuites>
   <listeners>

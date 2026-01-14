@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Wallet Auth Drupal Module">
-    <description>PHPCS configuration for wallet_auth module</description>
+<ruleset name="Wallet Auth Drupal Project">
+    <description>PHPCS configuration for Wallet Auth Drupal project</description>
 
     <!-- Use Drupal and DrupalPractice standards -->
     <rule ref="Drupal">
@@ -12,6 +12,11 @@
 
     <!-- Scan custom modules -->
     <file>web/modules/custom</file>
+
+    <!-- Exclude build artifacts and dependencies -->
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/js/dist/*</exclude-pattern>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
 
     <!-- Show colors in output -->
     <arg name="colors"/>

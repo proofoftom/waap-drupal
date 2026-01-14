@@ -1,9 +1,9 @@
-# PHPStan configuration for Wallet Auth Drupal module
-# Level: 1 (conservative start, will increase over time)
+# PHPStan configuration for custom Drupal modules
+# Level: 6 (strict analysis)
 # Target: web/modules/custom
 
 parameters:
-    level: 1
+    level: 6
     paths:
         - web/modules/custom
     ignoreErrors:
