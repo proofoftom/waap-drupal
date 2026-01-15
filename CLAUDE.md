@@ -13,7 +13,14 @@ This project uses a **two-repository architecture**:
 1. **Main Project Repository**: Contains Drupal installation and project configuration
 2. **wallet_auth Module Repository**: Separate Git repo at `web/modules/custom/wallet_auth/`
 
-When working on the wallet_auth module, note it has its own Git history.
+**Important:** When modifying the wallet_auth module, you must commit in both repositories:
+```bash
+# Commit in module repo first
+cd web/modules/custom/wallet_auth && git add . && git commit -m "your message"
+
+# Then commit in project repo (which tracks the submodule reference)
+cd /Users/proofoftom/Code/os-decoupled/fresh2 && git add . && git commit -m "your message"
+```
 
 ## Directory Structure
 
